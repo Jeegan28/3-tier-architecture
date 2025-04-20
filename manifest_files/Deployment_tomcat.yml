@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat_deployment
+  labels:
+    app: tomcat-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tomcat-app
+  template:
+    metadata:
+      labels:
+        app: tomcat-app
+    spec:
+      containers:
+      - name: application server
+        image: jeegan28/tomcat:replaceImageTag
+        ports:
+        - containerPort: 8080
+
+        env:
+          - name: DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: my_secret
+                key: DB_HOST
+          - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: my_secret
+                  key: DB_NAME
+          - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: my_secret
+                  key: DB_USER
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: my_secret
+                key: DB_PASS
+          - name: DB_PORT
+            valueFrom:
+              secretKeyRef:
+                name: my_secret
+                key: DB_PORT
+

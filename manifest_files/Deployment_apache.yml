@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-deployment
+  labels:
+    app: web-apache
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-apache
+  template:
+    metadata:
+      labels:
+        app: web-apache
+    spec:
+      containers:
+      - name: webserver
+        image: jeegan28/apache:replaceImageTag
+        ports:
+        - containerPort: 80
+

@@ -23,16 +23,6 @@ pipeline {
                 git branch: 'main', url: "https://github.com/${GIT_USER}/${GIT_REPO}.git"
             }
         }
-        
-        stage('Sync with remote') {
-            steps {
-                sh '''
-                   git fetch origin main
-                   git merge origin/main || git rebase origin/main
-                '''   
-            }
-        }
-
         stage('build and push apache image') {
             environment {
                 DOCKER_IMAGE="jeegan28/apache:${BUILD_NUMBER}"
@@ -75,7 +65,7 @@ pipeline {
                     sh """
                         git config user.email "jeegan@xyz.com"
                         git config user.name "Jeegan Jaikumar"
-                        sed -i "s/replaceImageTag/{BUILD_NUMBER}/g" manifest_files/Deployment_*.yml
+                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_*.yml
                         echo "Build number is ${BUILD_NUMBER}"
                         if ! git diff --quiet; then
                           git add manifest_files
@@ -89,6 +79,23 @@ pipeline {
             }
         }
     }
+     post {
+        success {
+            echo 'Build was successful!'
+            // Add any notification here, such as sending an email, Slack message, etc.
+        }
+
+        failure {
+            echo 'Build failed. Please check the logs for errors.'
+            // Add any notification for failure, like sending an error alert.
+        }
+
+        always {
+            echo 'Cleaning up the workspace...'
+            cleanWs() // Make sure to clean up after the pipeline runs
+        }
+     }
+}
 }
 
 

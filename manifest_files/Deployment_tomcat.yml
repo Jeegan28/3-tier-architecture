@@ -1,11 +1,11 @@
-apiVersion: apps/v1
+apiVersion: apps/vreplaceImageTag
 kind: Deployment
 metadata:
   name: tomcat-deployment
   labels:
     app: tomcat-app
 spec:
-  replicas: 3
+  replicas: replaceImageTag
   selector:
     matchLabels:
       app: tomcat-app
@@ -16,9 +16,9 @@ spec:
     spec:
       containers:
       - name: application-server
-        image: jeegan28/tomcat:1
+        image: jeeganreplaceImageTag/tomcat:replaceImageTag
         ports:
-        - containerPort: 8080
+        - containerPort: replaceImageTag
           name: http
 
         env:

@@ -67,18 +67,20 @@ pipeline {
         stage('Replace build number in manifestfiles') {
             steps {
                 withCredentials([string(credentialsId: "github", variable: "GITHUB_TOKEN")]) {
-                    sh '''
+                    sh """
                         git config user.email "jeegan@xyz.com"
                         git config user.name "Jeegan Jaikumar"
                         sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_*.yml
+                        echo "Build number is ${BUILD_NUMBER}
+                        cat manifest_files/Deployment_*.yml
                         if ! git diff --quiet; then
                           git add manifest_files
                           git commit -m "Update deploy version to ${BUILD_NUMBER}"
                           git push https://${GITHUB_TOKEN}@github.com/${GIT_USER}/${GIT_REPO}.git HEAD:main
                         else
-                          echo "No chenges to commit"
+                          echo "No changes to commit"
                         fi
-                    '''
+                    """
                 }
             }
         }

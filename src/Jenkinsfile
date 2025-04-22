@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        docker 
-    }
+    agent docker
      environment {
                 GIT_USER="Jeegan28"
                 GIT_REPO="3-tier-architecture"

@@ -13,6 +13,11 @@ pipeline {
     }
 
     stages {
+        stage('Clean up') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'main', url: "https://github.com/${GIT_USER}/${GIT_REPO}.git"

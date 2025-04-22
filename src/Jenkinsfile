@@ -2,79 +2,91 @@ pipeline {
     agent {
         docker {
            image 'jeegan28/jenkins_agent'
-           args '-u jenkins --entrypoint=/bin/bash'
+           args '-u jenkins' // Removed --entrypoint=/bin/bash
            registryUrl 'https://index.docker.io/v1/'
            registryCredentialsId 'docker-cred'
       }
    }
             
     environment {
-                GIT_USER="Jeegan28"
-                GIT_REPO="3-tier-architecture"
-                DOCKER_CREDENTIALS=credentials('docker-cred')
-     }
+        GIT_USER="Jeegan28"
+        GIT_REPO="3-tier-architecture"
+        DOCKER_CREDENTIALS=credentials('docker-cred')
+    }
 
-    stages{
+    stages {
         stage('Checkout') {
-            steps{
+            steps {
                 git branch: 'main', url: "https://github.com/${GIT_USER}/${GIT_REPO}.git"
             }
-
-
         }
+        
         stage('Sync with remote') {
-            steps{
+            steps {
                 sh '''
+                   git config --global --add safe.directory /var/lib/jenkins/workspace/Jeegan
                    git fetch origin main
                    git merge origin/main || git rebase origin/main
                 '''   
             }
         }
+
         stage('build and push apache image') {
-           environment{
+            environment {
                 DOCKER_IMAGE="jeegan28/apache:${BUILD_NUMBER}"
             }
-            steps{
-                sh " cd src && docker build -t ${DOCKER_IMAGE} -f Dockerfile_apache ."
+            steps {
                 script {
-                  def dockerImage= docker.image(env.DOCKER_IMAGE)
-                  docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                     dockerImage.push()
-                  }
+                    // Ensure the 'src' directory exists before building the image
+                    sh '''
+                        ls -la src  # Check if 'src' directory exists
+                        cd src
+                        docker build -t ${DOCKER_IMAGE} -f Dockerfile_apache .
+                    '''
+                    def dockerImage = docker.image(env.DOCKER_IMAGE)
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+                        dockerImage.push()
+                    }
                 }
             }
-        
         }
+
         stage('build and push tomcat') {
-            environment{
+            environment {
                 DOCKER_IMAGE="jeegan28/tomcat:${BUILD_NUMBER}"
             }
             steps {  
                 script {
-                  sh " cd src && docker build -t ${DOCKER_IMAGE} -f Dockerfile_tomcat ."
-                  def dockerImage= docker.image(env.DOCKER_IMAGE)
-                  docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                    dockerImage.push()
-                  }
-               }
+                    // Ensure the 'src' directory exists before building the image
+                    sh '''
+                        ls -la src  # Check if 'src' directory exists
+                        cd src
+                        docker build -t ${DOCKER_IMAGE} -f Dockerfile_tomcat .
+                    '''
+                    def dockerImage = docker.image(env.DOCKER_IMAGE)
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+                        dockerImage.push()
+                    }
+                }
             }
         }
+
         stage('Replace build number in manifestfiles') {
-            steps{
+            steps {
                 withCredentials([string(credentialsId: "github", variable: "GITHUB_TOKEN")]) {
-                   sh '''
-                    
-                       git config user.email "jeegan@xyz.com"
-                       git config user.name "Jeegan Jaikumar"
-                       sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_apache.yml
-                       sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_tomcat.yml
-                       git add manifest_files
-                       git commit -m"Update deploy version to ${BUILD_NUMBER}"
-                       git push https://${GITHUB_TOKEN}@github.com/${GIT_USER}/${GIT_REPO}.git HEAD:main
-                   '''
+                    sh '''
+                        git config user.email "jeegan@xyz.com"
+                        git config user.name "Jeegan Jaikumar"
+                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_apache.yml
+                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_tomcat.yml
+                        git add manifest_files
+                        git commit -m "Update deploy version to ${BUILD_NUMBER}"
+                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER}/${GIT_REPO}.git HEAD:main
+                    '''
                 }
             }
         }
     }
 }
+
 

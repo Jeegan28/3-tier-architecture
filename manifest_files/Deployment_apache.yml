@@ -1,11 +1,11 @@
-apiVersion: apps/vreplaceImageTag
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apache-deployment
   labels:
     app: web-apache
 spec:
-  replicas: replaceImageTag
+  replicas: 2
   selector:
     matchLabels:
       app: web-apache
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webserver
-        image: jeeganreplaceImageTag/apache:replaceImageTag
+        image: jeegan28/apache:replaceImageTag
         ports:
         - containerPort: replaceImageTag
 

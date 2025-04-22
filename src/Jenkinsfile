@@ -71,7 +71,7 @@ pipeline {
                         git config user.email "jeegan@xyz.com"
                         git config user.name "Jeegan Jaikumar"
                         sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_*.yml
-                        echo "Build number is ${BUILD_NUMBER}
+                        echo "Build number is ${BUILD_NUMBER}"
                         cat manifest_files/Deployment_*.yml
                         if ! git diff --quiet; then
                           git add manifest_files

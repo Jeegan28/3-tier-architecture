@@ -18,5 +18,5 @@ spec:
       - name: webserver
         image: jeegan28/apache:replaceImageTag
         ports:
-        - containerPort: replaceImageTag
+        - containerPort: 80
 

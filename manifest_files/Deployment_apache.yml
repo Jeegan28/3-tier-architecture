@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webserver
-        image: jeegan28/apache:replaceImageTag
+        image: jeegan28/apache:1
         ports:
         - containerPort: 80
 

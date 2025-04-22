@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: application-server
-        image: jeeganreplaceImageTag/tomcat:replaceImageTag
+        image: jeegan28/tomcat:replaceImageTag
         ports:
         - containerPort: replaceImageTag
           name: http

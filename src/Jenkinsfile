@@ -1,9 +1,6 @@
 pipeline {
     agent {
-        docker {
-            image 'jeegan28/jenkins_agent'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
+        docker 
     }
      environment {
                 GIT_USER="Jeegan28"

@@ -70,12 +70,13 @@ pipeline {
                     sh '''
                         git config user.email "jeegan@xyz.com"
                         git config user.name "Jeegan Jaikumar"
-                        BUILD_NUMBER=${BUILD_NUMBEER}
-                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_apache.yml
-                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_tomcat.yml
-                        git add manifest_files
-                        git commit -m "Update deploy version to ${BUILD_NUMBER}"
-                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER}/${GIT_REPO}.git HEAD:main
+                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" manifest_files/Deployment_*.yml
+                        if ! git diff --quiet; then
+                          git add manifest_files
+                          git commit -m "Update deploy version to ${BUILD_NUMBER}"
+                          git push https://${GITHUB_TOKEN}@github.com/${GIT_USER}/${GIT_REPO}.git HEAD:main
+                        else
+                          echo "No chenges to commit"
                     '''
                 }
             }

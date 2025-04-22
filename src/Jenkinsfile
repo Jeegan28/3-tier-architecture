@@ -1,5 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'jeegan28/jenkins_agent'
+            registryUrl 'https://index.docker.io/v1/'     // Docker Hub
+            registryCredentialsId 'docker-cred'
+        }
+    }
+            
      environment {
                 GIT_USER="Jeegan28"
                 GIT_REPO="3-tier-architecture"

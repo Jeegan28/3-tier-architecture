@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
            image 'jeegan28/jenkins_agent'
-           args '-u jenkins' // Removed --entrypoint=/bin/bash
+           args '-u root -v /var/run/docker.sock:/var/run/docker.sock' // Removed --entrypoint=/bin/bash
            registryUrl 'https://index.docker.io/v1/'
            registryCredentialsId 'docker-cred'
       }

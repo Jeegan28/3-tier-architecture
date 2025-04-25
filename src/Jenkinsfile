@@ -13,11 +13,6 @@ pipeline {
     }
 
     stages {
-        stage('Clean up') {
-            steps {
-                cleanWs()
-            }
-        }
         stage('Checkout') {
             steps {
                 git branch: 'main', url: "https://github.com/${GIT_USER}/${GIT_REPO}.git"
@@ -79,22 +74,6 @@ pipeline {
             }
         }
     }
-     post {
-        success {
-            echo 'Build was successful!'
-            // Add any notification here, such as sending an email, Slack message, etc.
-        }
-
-        failure {
-            echo 'Build failed. Please check the logs for errors.'
-            // Add any notification for failure, like sending an error alert.
-        }
-
-        always {
-            echo 'Cleaning up the workspace...'
-            cleanWs() // Make sure to clean up after the pipeline runs
-        }
-     }
 }
 
 
